@@ -1,4 +1,7 @@
+using FluentValidation;
 using HelpDesk.Api.Middleware;
+using HelpDesk.Api.Models;
+using HelpDesk.Api.Validators;
 using HelpDesk.Infrastructure.Data;
 using HelpDesk.Infrastructure.Data.Repositories;
 using HelpDesk.Infrastructure.Data.Services;
@@ -25,6 +28,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// ==================== VALIDADORES ====================
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateTicketRequest>, CreateTicketRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateTicketRequest>, UpdateTicketRequestValidator>();
 
 var jwtKey = builder.Configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey missing");
 var key = Encoding.ASCII.GetBytes(jwtKey);

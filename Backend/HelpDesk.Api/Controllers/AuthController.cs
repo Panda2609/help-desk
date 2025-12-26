@@ -1,3 +1,4 @@
+using FluentValidation;
 using HelpDesk.Api.Models;
 using HelpDesk.Infrastructure.Data.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,15 +10,26 @@ namespace HelpDesk.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IValidator<LoginRequest> _loginValidator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IValidator<LoginRequest> loginValidator)
     {
         _authService = authService;
+        _loginValidator = loginValidator;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
+        // Validate request
+        var validationResult = await _loginValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+            return BadRequest(new 
+            { 
+                message = "Validation failed",
+                errors = validationResult.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage })
+            });
+
         var result = await _authService.AuthenticateAsync(request.Username, request.Password);
 
         if (result == null)

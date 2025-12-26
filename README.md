@@ -36,12 +36,12 @@ dotnet restore
 # Aplicar migraciones (crear BD SQLite)
 dotnet ef database update --project HelpDesk.Api
 
-# Ejecutar servidor en puerto 5000
+# Ejecutar servidor en puerto 5264
 dotnet run --project HelpDesk.Api
 ```
 
-**API disponible en**: `http://localhost:5000`
-**Swagger disponible en**: `http://localhost:5000/swagger/index.html`
+**API disponible en**: `http://localhost:5264`
+**Swagger disponible en**: `http://localhost:5264/swagger/index.html`
 
 ### Frontend
 
@@ -94,7 +94,8 @@ help-desk/
 
 ### Autenticación
 - Login con usuario preconfigurado
-- Tokens JWT
+- Tokens JWT con expiración de 8 horas
+- Validaciones FluentValidation (username: 3+ chars, password: 4+ chars)
 - Auth Guard en rutas protegidas
 - Interceptor para inyectar token automáticamente
 
@@ -112,9 +113,10 @@ help-desk/
 - Diseño limpio y responsive
 
 ### Testing
-- Tests unitarios en backend (xUnit)
+- Tests unitarios en backend: AuthServiceTests.cs (5 tests con xUnit + Moq)
+  - Login válido, contraseña inválida, usuario inexistente, usuario inactivo, cobertura general
 - Tests en frontend (Jasmine)
-- Cobertura de casos principales
+- Todos los tests pasando (5/5)
 
 ---
 
@@ -127,7 +129,7 @@ help-desk/
 | **Clean Architecture** | Separación clara de capas para mantenibilidad |
 | **SQLite** | Base de datos ligera, portátil, sin dependencias externas |
 | **EF Core** | ORM estándar en .NET, migrations automáticas |
-| **FluentValidation** | Validaciones reutilizables y expresivas |
+| **FluentValidation** | Validaciones reutilizables e integradas en controllers |
 | **JWT** | Autenticación stateless y escalable |
 | **Serilog** | Logging estructurado en archivos |
 | **Swagger** | Documentación automática de API |
