@@ -1,0 +1,43 @@
+# C# / .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+.vs/
+.vscode/
+*.csproj.user
+appsettings.*.json
+!appsettings.json
+
+# Angular
+node_modules/
+dist/
+.angular/
+*.log
+npm-debug.log*
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+
+# Documentation (local)
+enunciado.txt
+
+# Build
+/build/
+/dist/
