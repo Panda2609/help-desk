@@ -1,0 +1,62 @@
+n Prueba Técnica Full Stack – Sistema de Tickets de
+Incidencias (Help Desk)
+n Objetivo
+Desarrollar una aplicación web que permita a los usuarios registrar, visualizar y actualizar tickets
+de incidencias, simulando un pequeño sistema de mesa de ayuda (Help Desk). La solución debe
+incluir un backend en .NET Core C# (API REST) y un frontend en Angular, con autenticación
+básica y buenas prácticas de arquitectura.
+nn Entrega
+El proyecto debe ser publicado en un repositorio Git público (GitHub, GitLab o Bitbucket).
+El repositorio debe incluir un README con las instrucciones de instalación, ejecución,
+credenciales y decisiones técnicas relevantes.
+nn Requisitos funcionales (MVP obligatorio)
+1. Autenticación
+• Permitir login y logout de usuarios (no es necesario registro).
+• Se puede usar un usuario preconfigurado (por ejemplo: admin / 123456).
+• Debe proteger las rutas de la aplicación mediante JWT o guardias en Angular.
+2. Gestión de Tickets
+• CRUD de tickets con campos: Id, Título, Descripción, Prioridad (Baja/Media/Alta), Estado
+(Nuevo/En Progreso/Resuelto), FechaCreación, UsuarioAsignado.
+• Listado y filtrado por estado y prioridad.
+• Flujo esperado: un usuario crea un ticket con estado 'Nuevo', puede editarlo y cambiar su estado.
+3. Interfaz Web
+• Listado de tickets con paginación, filtros y creación de nuevos tickets.
+• Formularios reactivos en Angular para crear/editar.
+• Feedback visual claro para errores o validaciones.
+n Requisitos técnicos
+Backend (.NET Core)
+• .NET 8 o 7, Clean Architecture, EF Core (SQLite o InMemory).
+• Validaciones con FluentValidation.
+• Swagger, Serilog y middleware global de errores.
+• CORS habilitado correctamente.
+Frontend (Angular)
+• Angular 17 o superior, Angular Material opcional.
+• Reactive Forms, Routing, Auth Guard e Interceptor JWT.
+• Formularios validados con mensajes de error.
+Testing
+• Backend: al menos 1 test unitario (modelo o servicio).
+• Frontend: al menos 1 test de componente o servicio.
+n Entregables
+• Estructura esperada del proyecto:
+/backend (Domain, Application, Infrastructure, Api)
+/frontend (src)
+/tests (Backend.Tests, Frontend.Tests)
+/docs (README.md, swagger.json opcional)
+• El README.md debe incluir: requisitos previos, pasos de ejecución, usuario/contraseña y
+decisiones técnicas.
+n Criterios de evaluación (100 pts)
+• Arquitectura & patrones: 25 pts
+• Calidad del código: 20 pts
+• Funcionalidad completa: 25 pts
+• Frontend UX & validaciones: 15 pts
+• Testing & documentación: 10 pts
+• Extras (Docker, logs, etc.): 5 pts
+n Extras opcionales
+• Docker Compose (API + Front + DB).
+• Filtros avanzados o búsqueda por texto.
+• Adjuntar archivos (simulado).
+• Notificaciones en tiempo real (SignalR).
+nnn Evaluación
+Se valorará más la claridad, las buenas prácticas y el diseño limpio del código que la cantidad de
+funcionalidades. Un candidato que entregue un proyecto bien estructurado, documentado y
+mantenible obtendrá mejor puntaje.
