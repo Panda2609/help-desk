@@ -1,0 +1,176 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand">Help Desk</span>
+    <div class="d-flex">
+      <span class="navbar-text me-3" *ngIf="authService.getCurrentUser()">
+        Welcome, {{ authService.getCurrentUser()?.username }}
+      </span>
+      <button class="btn btn-outline-danger" (click)="onLogout()">Logout</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Tickets</h1>
+
+      <!-- Error Alert -->
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="error = ''"></button>
+      </div>
+
+      <!-- Filters and Create Button -->
+      <div class="row mb-4">
+        <div class="col-md-2">
+          <label class="form-label">Filter by Status</label>
+          <select class="form-select" [(ngModel)]="filterStatus" (change)="onFilterChange()">
+            <option [ngValue]="null">All</option>
+            <option *ngFor="let status of statusOptions" [ngValue]="status.value">{{ status.label }}</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Filter by Priority</label>
+          <select class="form-select" [(ngModel)]="filterPriority" (change)="onFilterChange()">
+            <option [ngValue]="null">All</option>
+            <option *ngFor="let priority of priorityOptions" [ngValue]="priority.value">{{ priority.label }}</option>
+          </select>
+        </div>
+        <div class="col-md-8 d-flex align-items-end">
+          <button class="btn btn-primary" (click)="onCreateClick()">
+            Create Ticket
+          </button>
+        </div>
+      </div>
+
+      <!-- Tickets Table -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center">Loading...</td>
+            </tr>
+            <tr *ngIf="!loading && filteredTickets.length === 0">
+              <td colspan="7" class="text-center">No tickets found</td>
+            </tr>
+            <tr *ngFor="let ticket of filteredTickets">
+              <td>{{ ticket.id }}</td>
+              <td>{{ ticket.title }}</td>
+              <td>{{ ticket.description | slice:0:50 }}...</td>
+              <td>
+                <span class="badge" 
+                  [ngClass]="ticket.priority === 2 ? 'bg-danger' : (ticket.priority === 1 ? 'bg-warning' : 'bg-success')">
+                  {{ getPriorityLabel(ticket.priority) }}
+                </span>
+              </td>
+              <td>
+                <span class="badge"
+                  [ngClass]="ticket.status === 0 ? 'bg-info' : (ticket.status === 1 ? 'bg-warning' : 'bg-success')">
+                  {{ getStatusLabel(ticket.status) }}
+                </span>
+              </td>
+              <td>{{ ticket.createdAt | date:'short' }}</td>
+              <td>
+                <button class="btn btn-sm btn-warning me-2" (click)="onEditClick(ticket)">Edit</button>
+                <button class="btn btn-sm btn-danger" (click)="onDeleteClick(ticket.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="page === 1">
+            <button class="page-link" (click)="previousPage()">Previous</button>
+          </li>
+          <li class="page-item active">
+            <span class="page-link">Page {{ page }} of {{ Math.ceil(totalTickets / pageSize) }}</span>
+          </li>
+          <li class="page-item" [class.disabled]="page * pageSize >= totalTickets">
+            <button class="page-link" (click)="nextPage()">Next</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Modal -->
+<div *ngIf="showModal" class="modal fade show" role="dialog" style="display: block;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ editingTicketId ? 'Edit Ticket' : 'Create Ticket' }}</h5>
+        <button type="button" class="btn-close" (click)="onCancel()"></button>
+      </div>
+      <form [formGroup]="ticketForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" formControlName="title" 
+              [class.is-invalid]="f['title'].invalid && f['title'].touched" />
+            <div class="invalid-feedback d-block" *ngIf="f['title'].invalid && f['title'].touched">
+              <span *ngIf="f['title'].errors?.['required']">Title is required</span>
+              <span *ngIf="f['title'].errors?.['minlength']">Title must be at least 5 characters</span>
+              <span *ngIf="f['title'].errors?.['maxlength']">Title must not exceed 200 characters</span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" formControlName="description" rows="3"
+              [class.is-invalid]="f['description'].invalid && f['description'].touched"></textarea>
+            <div class="invalid-feedback d-block" *ngIf="f['description'].invalid && f['description'].touched">
+              <span *ngIf="f['description'].errors?.['required']">Description is required</span>
+              <span *ngIf="f['description'].errors?.['minlength']">Description must be at least 10 characters</span>
+              <span *ngIf="f['description'].errors?.['maxlength']">Description must not exceed 2000 characters</span>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="priority" class="form-label">Priority</label>
+              <select class="form-select" id="priority" formControlName="priority">
+                <option *ngFor="let p of priorityOptions" [value]="p.value">{{ p.label }}</option>
+              </select>
+            </div>
+            <div class="col-md-6" *ngIf="editingTicketId">
+              <label for="status" class="form-label">Status</label>
+              <select class="form-select" id="status" formControlName="status">
+                <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3" *ngIf="editingTicketId">
+            <label for="notes" class="form-label">Notes</label>
+            <textarea class="form-control" id="notes" formControlName="notes" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+          <button type="submit" class="btn btn-success" [disabled]="ticketForm.invalid">
+            {{ editingTicketId ? 'Update' : 'Create' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div *ngIf="showModal" class="modal-backdrop fade show"></div>

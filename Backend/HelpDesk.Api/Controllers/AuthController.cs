@@ -11,11 +11,13 @@ public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
     private readonly IValidator<LoginRequest> _loginValidator;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService, IValidator<LoginRequest> loginValidator)
+    public AuthController(IAuthService authService, IValidator<LoginRequest> loginValidator, ILogger<AuthController> logger)
     {
         _authService = authService;
         _loginValidator = loginValidator;
+        _logger = logger;
     }
 
     [HttpPost("login")]
@@ -36,6 +38,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Credenciales inválidas" });
 
         var (token, user, expiresAt) = result.Value;
+        
         var response = new LoginResponse
         {
             Token = token,

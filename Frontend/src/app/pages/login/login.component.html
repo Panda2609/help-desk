@@ -1,0 +1,67 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body p-5">
+          <h2 class="card-title text-center mb-4">Help Desk Login</h2>
+
+          <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error }}
+            <button type="button" class="btn-close" (click)="error = ''"></button>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                formControlName="username"
+                [class.is-invalid]="submitted && f['username'].errors"
+                placeholder="Enter username"
+              />
+              <div class="invalid-feedback d-block" *ngIf="submitted && f['username'].errors">
+                <span *ngIf="f['username'].errors['required']">Username is required</span>
+                <span *ngIf="f['username'].errors['minlength']">Username must be at least 3 characters</span>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                formControlName="password"
+                [class.is-invalid]="submitted && f['password'].errors"
+                placeholder="Enter password"
+              />
+              <div class="invalid-feedback d-block" *ngIf="submitted && f['password'].errors">
+                <span *ngIf="f['password'].errors['required']">Password is required</span>
+                <span *ngIf="f['password'].errors['minlength']">Password must be at least 4 characters</span>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button
+              type="submit"
+              class="btn btn-primary w-100"
+              [disabled]="loading"
+            >
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              {{ loading ? 'Logging in...' : 'Login' }}
+            </button>
+          </form>
+
+          <hr class="my-4" />
+          <p class="text-center text-muted mb-0">
+            Demo credentials: admin / 123456
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

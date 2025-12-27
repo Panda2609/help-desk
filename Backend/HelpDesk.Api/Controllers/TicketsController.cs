@@ -24,7 +24,7 @@ public class TicketsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTickets([FromQuery] int page = 1, [FromQuery] int pageSize = 10, 
+    public async Task<IActionResult> GetTickets([FromQuery] int page = 1, [FromQuery] int pageSize = 5, 
         [FromQuery] int? status = null, [FromQuery] int? priority = null)
     {
         var statusEnum = status.HasValue ? (TicketStatus?)status.Value : null;
@@ -49,11 +49,22 @@ public class TicketsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTicket([FromBody] CreateTicketRequest request)
     {
-        var userId = int.Parse(User.FindFirst("sub")?.Value ?? "0");
+        // Get userId from the nameidentifier claim (ASP.NET Core maps "sub" to this)
+        var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+                        ?? User.FindFirst("sub")?.Value;
         
+        if (!int.TryParse(userIdString, out var userId) || userId == 0)
+        {
+            _logger.LogWarning("Invalid or missing userId claim");
+            return Unauthorized(new { message = "Usuario no válido" });
+        }
+
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
+        {
+            _logger.LogWarning("User not found with ID: {UserId}", userId);
             return Unauthorized(new { message = "Usuario no válido" });
+        }
 
         var ticket = new Ticket
         {

@@ -1,0 +1,25 @@
+/* Tickets component styles */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.badge {
+  font-size: 0.875rem;
+  padding: 0.35rem 0.65rem;
+}
+
+.card {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.btn {
+  border-radius: 4px;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
